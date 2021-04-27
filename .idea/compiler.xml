@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="jira_import_parser" target="15" />
+      <module name="jira_import_parser" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
