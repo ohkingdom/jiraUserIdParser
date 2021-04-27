@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 
 public class Runner {
 
-    private String issueFile = "C:\\Users\\Dominic\\Downloads\\Test Importer\\TestImport.csv";
-    private String userIdFile = "C:\\Users\\Dominic\\Downloads\\Test Importer\\export-users.csv";
+    private String issueFile = "TestImport.csv";
+    private String userIdFile = "export-users.csv";
     private List<String[]> issueList;
     private List<String[]> userIdList;
     private Map<String, String> userIdMap = new HashMap<>();
@@ -43,9 +43,9 @@ public class Runner {
             formattedString = stringFromList.substring(1, stringFromList.length() - 1);
             for (String key : userIdMap.keySet()) {
                 // Set String userId to the Hashmap key (trim the leading '[')
-                userId = key.substring(1);
+                userId = key;
                 // Set the String userName to the Hashmap value (trim the leading/ending '[' and ']')
-                userName = userIdMap.get(key).substring(1, userIdMap.get(key).length() - 1);
+                userName = userIdMap.get(key);
                 // If the formatted string contains the userId
                 if (formattedString.contains(userId)) {
                     // Replace all occurrences of the userId with the userName
@@ -67,30 +67,36 @@ public class Runner {
 
     public void stringToMap() {
         // Splits UserId and Username into a Key/Value pair
+        int i = 0;
         for (String[] userId : userIdList) {
-            String[] parts = Arrays.toString(userId).split(",");
-            String key = parts[0];
-            String value = parts[1];
+            if (i == 0){
+                //skip header
+                i++;
+                continue;
+            }
+
+            String key = userId[0];
+            String value = userId[1];
             userIdMap.put(key, value);
         }
     }
 
     private void importFilesToList() throws IOException, CsvException {
         // Jira Export to List
-        try (CSVReader reader = new CSVReader(new FileReader(issueFile))) {
+        try (CSVReader reader = new CSVReader(new FileReader(this.getClass().getResource(issueFile).getPath()))) {
             issueList = reader.readAll();
         }
         // UserIDs to List
-        try (CSVReader reader = new CSVReader(new FileReader(userIdFile))) {
+        try (CSVReader reader = new CSVReader(new FileReader(this.getClass().getResource(userIdFile).getPath()))) {
             userIdList = reader.readAll();
         }
     }
 
     public void writeToCsv() throws IOException {
-        String fileName = "C:\\Users\\Dominic\\Downloads\\Test Importer\\test_output.csv";
-        try (var fos = new FileOutputStream(fileName);
-             var osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-             var writer = new CSVWriter(osw)) {
+        String fileName = "test_output.csv";
+        try (FileOutputStream fos = new FileOutputStream(fileName);
+             OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+             CSVWriter writer = new CSVWriter(osw)) {
 
             writer.writeAll(issueList);
         }
